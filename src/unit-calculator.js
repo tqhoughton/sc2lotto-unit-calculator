@@ -31,6 +31,11 @@ var Recipe = (function (_super) {
             var nodeList = unitNode.getDescendents(unitArray);
             return combineObjs(nodeList);
         }
+        else if (unitType == 'magic') {
+            var unitNode = new NodeItem(this, 1);
+            var nodeList = unitNode.getDescendents(unitArray, true);
+            return combineObjs(nodeList);
+        }
     };
     return Recipe;
 }(Unit));
@@ -52,12 +57,15 @@ var NodeItem = (function () {
         }
         return childNodes;
     };
-    NodeItem.prototype.getDescendents = function (unitArray) {
+    NodeItem.prototype.getDescendents = function (unitArray, magic) {
         var children = this.getChildNodes(unitArray);
         var newChildren = [];
+        if (magic && !(this.getChildNodes(unitArray)[0].unit instanceof Recipe)) {
+            return [this];
+        }
         if (children) {
             for (var i = 0; i < children.length; i++) {
-                var grandchildren = children[i].getDescendents(unitArray);
+                var grandchildren = children[i].getDescendents(unitArray, magic);
                 if (grandchildren.length) {
                     newChildren = newChildren.concat(grandchildren);
                 }
@@ -118,7 +126,6 @@ var readData = function (unitData) {
             units.push(new Unit(current.name));
         }
     }
-    console.log(units);
     return units;
 };
 var printObjToTable = function (obj, toAppend) {
@@ -130,18 +137,28 @@ var printObjToTable = function (obj, toAppend) {
     }
 };
 var clickCallback = function () {
-    var display = this.nextSibling.style.display;
-    if (display === 'block') {
-        this.nextSibling.style.display = 'none';
+    var recipeType = document.getElementById('recipeType').value;
+    var children = this.nextSibling.children;
+    var targetElem = children[0];
+    if (recipeType === 'Immediate') {
+        targetElem = targetElem.nextSibling;
+    }
+    else if (recipeType === 'Magic') {
+        targetElem = targetElem.nextSibling.nextSibling;
+    }
+    if (targetElem.style.display === 'block') {
+        targetElem.style.display = '';
     }
     else {
-        this.nextSibling.style.display = 'block';
+        for (var i = 0; i < children.length; i++) {
+            children[i].style.display = '';
+        }
+        targetElem.style.display = 'block';
     }
 };
 var sortData = function (oldArr) {
     var newArr = [];
     for (var i = 0; i < oldArr.length; i++) {
-        console.log(oldArr[i] instanceof Unit);
         if (oldArr[i] instanceof Recipe) {
             newArr.push(oldArr[i]);
         }
@@ -160,7 +177,6 @@ var filterResults = function (elem) {
     }
     searchTerm = searchTerm.replace(/ /g, "_");
     var recipes = document.getElementsByClassName('recipe');
-    console.log(recipes);
     for (var i = 0; i < recipes.length; i++) {
         if (recipes[i].id.indexOf(searchTerm) === -1) {
             recipes[i].style.display = 'none';
@@ -171,8 +187,6 @@ var filterResults = function (elem) {
     }
 };
 var toggleUnits = function (elem, unitType) {
-    console.log(unitType);
-    console.log(elem);
     var unitsToToggle = document.getElementsByClassName(unitType);
     var display;
     if (elem.checked) {
@@ -185,9 +199,7 @@ var toggleUnits = function (elem, unitType) {
         unitsToToggle[i].style.display = display;
     }
 };
-//console.log(units);
 var f_main = function (unitData) {
-    //console.log(units);
     var units = readData(unitData);
     units = sortData(units);
     var main = document.getElementById('main');
@@ -202,12 +214,16 @@ var f_main = function (unitData) {
             var showButton = createElement('button', 'Show Recipe', unitElem);
             showButton.addEventListener('click', clickCallback);
             //TODO: finish getting the recipe info
-            var basicContainer = createElement('div', '', unitElem, 'basic-units');
-            // immediateContainer = createElement('div', 'Recipe', unitElem, 'immediate');
+            var recipesContainer = createElement('div', '', unitElem, 'recipes-container');
+            var basicContainer = createElement('div', '', recipesContainer, 'basic-units');
+            var immediateContainer = createElement('div', '', recipesContainer, 'immediate-units');
+            var magicContainer = createElement('div', '', recipesContainer, 'magic-units');
             var immediateRecipe = units[i].getRecipeUnits('immediate', units);
             var basicRecipe = units[i].getRecipeUnits('basic', units);
-            //printObjToTable(immediateRecipe, immediateContainer);
+            var magicRecipe = units[i].getRecipeUnits('magic', units);
+            printObjToTable(immediateRecipe, immediateContainer);
             printObjToTable(basicRecipe, basicContainer);
+            printObjToTable(magicRecipe, magicContainer);
         }
     }
 };

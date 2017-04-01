@@ -2,10 +2,18 @@
     box-sizing: border-box;
 }
 
+html {
+	overflow-y: scroll;
+}
+
 body {
 	font-family: Arial;
 	margin: 0;
 	padding: 0;
+}
+
+table {
+	font-size: 14px;
 }
 
 input {
@@ -14,6 +22,10 @@ input {
 
 td:last-child {
 	padding-left: 5px;
+}
+
+td:first-child {
+	text-align: center;
 }
 
 .inner {
@@ -61,7 +73,7 @@ h4 {
 	margin-bottom: .2em;
 }
 
-.basic-units {
+.basic-units, .immediate-units, .magic-units {
 	position: absolute;
 	top: 100%;
 	left: 0;
@@ -81,4 +93,8 @@ h4 {
 	#main > .recipe {
 		width: calc(100%/6 - 30px);
 	}
+}
+
+.recipeSelect {
+	float: right;
 }

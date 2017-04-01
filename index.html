@@ -1,14 +1,23 @@
 <html>
     <head>
         <title>Unit Calculator</title>
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="style.min.css">
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     </head>
     <body>
 		<header>
 			<div class="inner">
 				<input type="text" placeholder="search for unit..." onkeyup="filterResults(this)">
 				<label><input id="hiddenCheck" type="checkbox" checked onclick="toggleUnits(this, 'hidden')"> Hidden</label>
-				<label><input id="basicCheck" type="checkbox" checked onclick="toggleUnits(this, 'basic')"> Basic</label>
+				<label><input id="basicCheck" type="checkbox" checked onclick="toggleUnits(this, 'basic')"> Normal</label>
+				<div class="recipeSelect">
+					Recipe Type:
+					<select id="recipeType">
+						<option selected="selected">Basic</option>
+						<option>Magic</option>
+						<option>Immediate</option>
+					</select>
+				</div>
 			</div>
 		</header>
         <div id="main">
@@ -18,7 +27,7 @@
 				A tool made by <a target="_blank" href="https://github.com/OmniPotent42">Turner Houghton</a>
 			</div>
 		</footer>
-        <script src="src/units.js"></script>
-        <script src="src/unit-calculator.js"></script>
+        <script src="src/units.min.js"></script>
+        <script src="src/unit-calculator.min.js"></script>
     </body>
 </html>

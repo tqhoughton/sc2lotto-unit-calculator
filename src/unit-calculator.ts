@@ -16,6 +16,10 @@ class Recipe extends Unit {
 			let unitNode = new NodeItem(this, 1);
 			let nodeList = unitNode.getDescendents(unitArray);
 			return combineObjs(nodeList);
+		} else if (unitType == 'magic') {
+			let unitNode = new NodeItem(this, 1);
+			let nodeList = unitNode.getDescendents(unitArray, true);
+			return combineObjs(nodeList);
 		}
 	}
 }
@@ -38,12 +42,16 @@ class NodeItem {
 		return childNodes;
 	}
 	
-	getDescendents(unitArray: (Unit|Recipe)[]) {
+	getDescendents(unitArray: (Unit|Recipe)[], magic?: Boolean) {
 		let children = this.getChildNodes(unitArray);
 		let newChildren: NodeItem[] = [];
+		if (magic && !(this.getChildNodes(unitArray)[0].unit instanceof Recipe)) {
+			return [this];
+		}
+		
 		if (children) {
 			for (var i = 0; i < children.length; i++) {
-				let grandchildren = children[i].getDescendents(unitArray);
+				let grandchildren = children[i].getDescendents(unitArray, magic);
 				if (grandchildren.length) {
 					newChildren = newChildren.concat(grandchildren);
 				}
@@ -106,7 +114,6 @@ let readData = function(unitData) {
 			units.push(new Unit(current.name));
 		}
 	}
-	console.log(units);
 	return units;
 }
 
@@ -120,11 +127,24 @@ let printObjToTable = function(obj: Object, toAppend) {
 }
 
 let clickCallback = function() {
-	let display = this.nextSibling.style.display;
-	if (display === 'block') {
-		this.nextSibling.style.display = 'none';
+	let recipeType = (document.getElementById('recipeType') as HTMLSelectElement).value;
+	
+	let children = this.nextSibling.children;
+	let targetElem = children[0];
+	
+	if (recipeType === 'Immediate') {
+		targetElem = targetElem.nextSibling;
+	} else if (recipeType === 'Magic') {
+		targetElem = targetElem.nextSibling.nextSibling;
+	}
+	
+	if (targetElem.style.display === 'block') {
+		targetElem.style.display = '';
 	} else {
-		this.nextSibling.style.display = 'block';
+		for (var i = 0; i < children.length; i++) {
+			children[i].style.display = '';
+		}
+		targetElem.style.display = 'block';
 	}
 }
 
@@ -132,7 +152,6 @@ let sortData = function(oldArr:(Unit|Recipe)[]) {
 	let newArr:(Unit|Recipe)[] = [];
 	
 	for (var i = 0; i < oldArr.length; i++) {
-		console.log(oldArr[i] instanceof Unit);
 		if (oldArr[i] instanceof Recipe) {
 			newArr.push(oldArr[i]);
 		} else {
@@ -154,7 +173,6 @@ let filterResults = function(elem) {
 	searchTerm = searchTerm.replace(/ /g,"_");
 	
 	let recipes = document.getElementsByClassName('recipe');
-	console.log(recipes);
 	
 	for (var i = 0; i < recipes.length; i++) {
 		if (recipes[i].id.indexOf(searchTerm) === -1) {
@@ -166,8 +184,6 @@ let filterResults = function(elem) {
 }
 
 let toggleUnits = function(elem, unitType) {
-	console.log(unitType);
-	console.log(elem);
 	
 	let unitsToToggle = document.getElementsByClassName(unitType);
 	let display;
@@ -181,10 +197,7 @@ let toggleUnits = function(elem, unitType) {
 	}
 }
 
-//console.log(units);
-
 let f_main = function(unitData) {
-	//console.log(units);
 	let units = readData(unitData);
 	units = sortData(units);
     let main = document.getElementById('main');
@@ -200,12 +213,16 @@ let f_main = function(unitData) {
 			let showButton = createElement('button', 'Show Recipe', unitElem);
 			showButton.addEventListener('click', clickCallback);
 			//TODO: finish getting the recipe info
-			let basicContainer = createElement('div', '', unitElem, 'basic-units');
-			// immediateContainer = createElement('div', 'Recipe', unitElem, 'immediate');
+			let recipesContainer = createElement('div', '', unitElem, 'recipes-container');
+			let basicContainer = createElement('div', '', recipesContainer, 'basic-units');
+			let immediateContainer = createElement('div', '', recipesContainer, 'immediate-units');
+			let magicContainer = createElement('div', '', recipesContainer, 'magic-units');
 			let immediateRecipe = (units[i] as Recipe).getRecipeUnits('immediate', units);
 			let basicRecipe = (units[i] as Recipe).getRecipeUnits('basic', units);
-			//printObjToTable(immediateRecipe, immediateContainer);
+			let magicRecipe = (units[i] as Recipe).getRecipeUnits('magic', units);
+			printObjToTable(immediateRecipe, immediateContainer);
 			printObjToTable(basicRecipe, basicContainer);
+			printObjToTable(magicRecipe, magicContainer);
 		}
     }
 }
