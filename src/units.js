@@ -792,5 +792,13 @@ var unitData = [
 			alarak: 1,
 			warfield: 2
 		}
+	},
+	{
+		name: "hybrid_destroyer",
+		type: "hidden",
+		ingredients: {
+			hercules_bomber: 1,
+			mohandar: 1
+		}
 	}
 ];
