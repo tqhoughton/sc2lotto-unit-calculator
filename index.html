@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Unit Calculator</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+		<header>
+			<div class="inner">
+				<input type="text" placeholder="search for unit..." onkeyup="filterResults(this)">
+				<label><input id="hiddenCheck" type="checkbox" checked onclick="toggleUnits(this, 'hidden')"> Hidden</label>
+				<label><input id="basicCheck" type="checkbox" checked onclick="toggleUnits(this, 'basic')"> Basic</label>
+			</div>
+		</header>
+        <div id="main">
+		</div>
+		<footer>
+			<div class="inner">
+				A tool made by <a target="_blank" href="https://github.com/OmniPotent42">Turner Houghton</a>
+			</div>
+		</footer>
+        <script src="src/units.js"></script>
+        <script src="src/unit-calculator.js"></script>
+    </body>
+</html>

@@ -1,0 +1,216 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Unit = (function () {
+    function Unit(name) {
+        this.name = name;
+    }
+    return Unit;
+}());
+var Recipe = (function (_super) {
+    __extends(Recipe, _super);
+    function Recipe(name, ingredients, unitType) {
+        var _this = _super.call(this, name) || this;
+        _this.ingredients = ingredients;
+        _this.unitType = unitType;
+        return _this;
+    }
+    Recipe.prototype.getRecipeUnits = function (unitType, unitArray) {
+        if (unitType == 'immediate') {
+            return this.ingredients;
+        }
+        else if (unitType == 'basic') {
+            var unitNode = new NodeItem(this, 1);
+            var nodeList = unitNode.getDescendents(unitArray);
+            return combineObjs(nodeList);
+        }
+    };
+    return Recipe;
+}(Unit));
+var NodeItem = (function () {
+    function NodeItem(unit, modifier) {
+        this.unit = unit;
+        this.modifier = modifier;
+    }
+    NodeItem.prototype.getChildNodes = function (unitArray) {
+        var ingredients = this.unit.ingredients;
+        if (!ingredients) {
+            return false;
+        }
+        var childNodes = [];
+        var unitNames = unitArray.map(function (x) { return x.name; });
+        for (var ingredient in ingredients) {
+            var index = unitNames.indexOf(ingredient);
+            childNodes.push(new NodeItem(unitArray[index], ingredients[ingredient] * this.modifier));
+        }
+        return childNodes;
+    };
+    NodeItem.prototype.getDescendents = function (unitArray) {
+        var children = this.getChildNodes(unitArray);
+        var newChildren = [];
+        if (children) {
+            for (var i = 0; i < children.length; i++) {
+                var grandchildren = children[i].getDescendents(unitArray);
+                if (grandchildren.length) {
+                    newChildren = newChildren.concat(grandchildren);
+                }
+            }
+            return newChildren;
+        }
+        else {
+            return [this];
+        }
+    };
+    return NodeItem;
+}());
+//create element is a function that creates a new element with the innertext listed, appends it to toAppend, and returns the new element
+var createElement = function (elem, innerText, toAppend, cssClass, id) {
+    var newElem = document.createElement(elem);
+    if (cssClass) {
+        newElem.className = cssClass;
+    }
+    if (id) {
+        newElem.id = id;
+    }
+    var newText = document.createTextNode(innerText);
+    newElem.appendChild(newText);
+    toAppend.appendChild(newElem);
+    return newElem;
+};
+var getPrettyStr = function (prop) {
+    return prop.replace(/_/g, ' ');
+};
+var combineObjs = function (objArr) {
+    var newObj = {};
+    for (var i = 0; i < objArr.length; i++) {
+        //get the name of the unit
+        var name_1 = objArr[i].unit.name;
+        if (newObj[name_1]) {
+            newObj[name_1] += objArr[i].modifier;
+        }
+        else {
+            newObj[name_1] = objArr[i].modifier;
+        }
+    }
+    return newObj;
+};
+//create an array of units/recipes based on what is in the unitData
+var readData = function (unitData) {
+    var units;
+    units = [];
+    for (var i = 0; i < unitData.length; i++) {
+        var current = unitData[i];
+        if (!current.type) {
+            current.type = 'basic';
+        }
+        //check if this object has an 'ingredients' property
+        if (current.ingredients) {
+            units.push(new Recipe(current.name, current.ingredients, current.type));
+        }
+        else {
+            units.push(new Unit(current.name));
+        }
+    }
+    console.log(units);
+    return units;
+};
+var printObjToTable = function (obj, toAppend) {
+    var table = createElement('table', '', toAppend);
+    for (var prop in obj) {
+        var row = createElement('tr', '', table);
+        var col2 = createElement('td', '' + Math.round(obj[prop] * 100) / 100, row);
+        var col1 = createElement('td', getPrettyStr(prop), row);
+    }
+};
+var clickCallback = function () {
+    var display = this.nextSibling.style.display;
+    if (display === 'block') {
+        this.nextSibling.style.display = 'none';
+    }
+    else {
+        this.nextSibling.style.display = 'block';
+    }
+};
+var sortData = function (oldArr) {
+    var newArr = [];
+    for (var i = 0; i < oldArr.length; i++) {
+        console.log(oldArr[i] instanceof Unit);
+        if (oldArr[i] instanceof Recipe) {
+            newArr.push(oldArr[i]);
+        }
+        else {
+            newArr.unshift(oldArr[i]);
+        }
+    }
+    return newArr;
+};
+var filterResults = function (elem) {
+    document.getElementById('hiddenCheck').checked = true;
+    document.getElementById('basicCheck').checked = true;
+    var searchTerm = elem.value;
+    if (!searchTerm) {
+        searchTerm = '';
+    }
+    searchTerm = searchTerm.replace(/ /g, "_");
+    var recipes = document.getElementsByClassName('recipe');
+    console.log(recipes);
+    for (var i = 0; i < recipes.length; i++) {
+        if (recipes[i].id.indexOf(searchTerm) === -1) {
+            recipes[i].style.display = 'none';
+        }
+        else {
+            recipes[i].style.display = 'block';
+        }
+    }
+};
+var toggleUnits = function (elem, unitType) {
+    console.log(unitType);
+    console.log(elem);
+    var unitsToToggle = document.getElementsByClassName(unitType);
+    var display;
+    if (elem.checked) {
+        display = 'block';
+    }
+    else {
+        display = 'none';
+    }
+    for (var i = 0; i < unitsToToggle.length; i++) {
+        unitsToToggle[i].style.display = display;
+    }
+};
+//console.log(units);
+var f_main = function (unitData) {
+    //console.log(units);
+    var units = readData(unitData);
+    units = sortData(units);
+    var main = document.getElementById('main');
+    //for each unit in units, create a DOM object with its name as the title
+    for (var i = 0; i < units.length; i++) {
+        var name_2 = getPrettyStr(units[i].name);
+        var unitElem = createElement('div', '', main, 'unit', units[i].name);
+        createElement('h4', name_2, unitElem, 'unit-title');
+        if (units[i] instanceof Recipe) {
+            //let btn = createElement('button', 'Recipe', unitElem);
+            unitElem.className = 'recipe ' + units[i].unitType;
+            var showButton = createElement('button', 'Show Recipe', unitElem);
+            showButton.addEventListener('click', clickCallback);
+            //TODO: finish getting the recipe info
+            var basicContainer = createElement('div', '', unitElem, 'basic-units');
+            // immediateContainer = createElement('div', 'Recipe', unitElem, 'immediate');
+            var immediateRecipe = units[i].getRecipeUnits('immediate', units);
+            var basicRecipe = units[i].getRecipeUnits('basic', units);
+            //printObjToTable(immediateRecipe, immediateContainer);
+            printObjToTable(basicRecipe, basicContainer);
+        }
+    }
+};
+window.onload = function () {
+    f_main(unitData);
+};
