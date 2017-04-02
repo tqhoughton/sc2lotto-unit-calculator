@@ -1,12 +1,12 @@
 declare var unitData: any;
 
 class Unit {
-    constructor (public name: string) {}
+    constructor (public name: string, public race: string) {}
 }
 
 class Recipe extends Unit {
-    constructor (name: string, public ingredients: Object, public unitType: string) {
-        super(name);
+    constructor (name: string, race: string, public ingredients: Object, public tier: string) {
+        super(name, race);
     }
 	
 	getRecipeUnits(unitType: string, unitArray:(Unit|Recipe)[]) {
@@ -109,9 +109,9 @@ let readData = function(unitData) {
 		}
 		//check if this object has an 'ingredients' property
 		if (current.ingredients) {
-			units.push(new Recipe(current.name, current.ingredients, current.type));
+			units.push(new Recipe(current.name, current.race, current.ingredients, current.tier));
 		} else {
-			units.push(new Unit(current.name));
+			units.push(new Unit(current.name, current.race));
 		}
 	}
 	return units;
@@ -188,7 +188,7 @@ let toggleUnits = function(elem, unitType) {
 	let unitsToToggle = document.getElementsByClassName(unitType);
 	let display;
 	if (elem.checked) {
-		display = 'block';
+		display = '';
 	} else {
 		display = 'none'
 	}
@@ -209,8 +209,11 @@ let f_main = function(unitData) {
 		createElement('h4', name, unitElem, 'unit-title');
 		if (units[i] instanceof Recipe) {
 			//let btn = createElement('button', 'Recipe', unitElem);
-			unitElem.className = 'recipe ' + (units[i] as Recipe).unitType;
-			let showButton = createElement('button', 'Show Recipe', unitElem);
+			unitElem.className = 'recipe ' + (units[i] as Recipe).tier;
+			if ((units[i] as Recipe).tier !== "hidden") {
+				unitElem.className = unitElem.className + ' basic';
+			}
+			let showButton = createElement('button', 'Recipe', unitElem);
 			showButton.addEventListener('click', clickCallback);
 			//TODO: finish getting the recipe info
 			let recipesContainer = createElement('div', '', unitElem, 'recipes-container');

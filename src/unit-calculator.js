@@ -9,17 +9,18 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var Unit = (function () {
-    function Unit(name) {
+    function Unit(name, race) {
         this.name = name;
+        this.race = race;
     }
     return Unit;
 }());
 var Recipe = (function (_super) {
     __extends(Recipe, _super);
-    function Recipe(name, ingredients, unitType) {
-        var _this = _super.call(this, name) || this;
+    function Recipe(name, race, ingredients, tier) {
+        var _this = _super.call(this, name, race) || this;
         _this.ingredients = ingredients;
-        _this.unitType = unitType;
+        _this.tier = tier;
         return _this;
     }
     Recipe.prototype.getRecipeUnits = function (unitType, unitArray) {
@@ -120,10 +121,10 @@ var readData = function (unitData) {
         }
         //check if this object has an 'ingredients' property
         if (current.ingredients) {
-            units.push(new Recipe(current.name, current.ingredients, current.type));
+            units.push(new Recipe(current.name, current.race, current.ingredients, current.tier));
         }
         else {
-            units.push(new Unit(current.name));
+            units.push(new Unit(current.name, current.race));
         }
     }
     return units;
@@ -190,7 +191,7 @@ var toggleUnits = function (elem, unitType) {
     var unitsToToggle = document.getElementsByClassName(unitType);
     var display;
     if (elem.checked) {
-        display = 'block';
+        display = '';
     }
     else {
         display = 'none';
@@ -210,8 +211,11 @@ var f_main = function (unitData) {
         createElement('h4', name_2, unitElem, 'unit-title');
         if (units[i] instanceof Recipe) {
             //let btn = createElement('button', 'Recipe', unitElem);
-            unitElem.className = 'recipe ' + units[i].unitType;
-            var showButton = createElement('button', 'Show Recipe', unitElem);
+            unitElem.className = 'recipe ' + units[i].tier;
+            if (units[i].tier !== "hidden") {
+                unitElem.className = unitElem.className + ' basic';
+            }
+            var showButton = createElement('button', 'Recipe', unitElem);
             showButton.addEventListener('click', clickCallback);
             //TODO: finish getting the recipe info
             var recipesContainer = createElement('div', '', unitElem, 'recipes-container');
