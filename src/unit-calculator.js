@@ -158,20 +158,30 @@ var clickCallback = function () {
     }
 };
 var sortData = function (oldArr) {
+    var recipeArr = oldArr.filter(function (x) { return (x instanceof Recipe); });
+    var tierObj = {
+        magic: [],
+        rare: [],
+        epic: [],
+        unique: [],
+        hell: [],
+        hidden_: [],
+        legendary: [],
+        hidden: []
+    };
+    for (var i = 0; i < recipeArr.length; i++) {
+        var tier = recipeArr[i].tier;
+        tierObj[tier].push(recipeArr[i]);
+    }
     var newArr = [];
-    for (var i = 0; i < oldArr.length; i++) {
-        if (oldArr[i] instanceof Recipe) {
-            newArr.push(oldArr[i]);
-        }
-        else {
-            newArr.unshift(oldArr[i]);
-        }
+    for (var prop in tierObj) {
+        newArr = newArr.concat(tierObj[prop]);
     }
     return newArr;
 };
 var filterResults = function (elem) {
-    document.getElementById('hiddenCheck').checked = true;
-    document.getElementById('basicCheck').checked = true;
+    //(document.getElementById('hiddenCheck') as HTMLInputElement).checked = true;
+    //(document.getElementById('basicCheck') as HTMLInputElement).checked = true;
     var searchTerm = elem.value;
     if (!searchTerm) {
         searchTerm = '';
@@ -183,52 +193,87 @@ var filterResults = function (elem) {
             recipes[i].style.display = 'none';
         }
         else {
-            recipes[i].style.display = 'block';
+            recipes[i].style.display = '';
         }
     }
 };
-var toggleUnits = function (elem, unitType) {
-    var unitsToToggle = document.getElementsByClassName(unitType);
-    var display;
-    if (elem.checked) {
-        display = '';
+var toggleClass = function (elem, eClass) {
+    var oldClasses = elem.className;
+    var classArr = oldClasses.split(' ').filter(function (x) { return (x !== ''); });
+    console.log(classArr);
+    var index = classArr.indexOf(eClass);
+    if (index > -1) {
+        classArr.splice(index, 1);
     }
     else {
-        display = 'none';
+        classArr.push(eClass);
     }
-    for (var i = 0; i < unitsToToggle.length; i++) {
-        unitsToToggle[i].style.display = display;
+    var newClasses = classArr.join(' ');
+    elem.className = newClasses;
+};
+var removeClasses = function (elem, classArr) {
+    var oldClasses = elem.className.split(' ').filter(function (x) { return (x !== ''); });
+    for (var i = 0; i < classArr.length; i++) {
+        var index = oldClasses.indexOf(classArr[i]);
+        if (index > -1) {
+            oldClasses.splice(index, 1);
+        }
     }
+    var newClasses = oldClasses.join(' ');
+    elem.className = newClasses;
+};
+var toggleUnits = function (elem, unitType) {
+    var main = document.getElementById('main');
+    toggleClass(main, unitType);
+};
+var setRaceToggle = function (val) {
+    var raceClasses = [
+        'terran_bio',
+        'protoss_bio',
+        'zerg',
+        'terran_mech',
+        'protoss_mech',
+        'hybrid'
+    ];
+    var classToSet = val.replace(/ /g, "_").toLowerCase();
+    var main = document.getElementById('main');
+    removeClasses(main, raceClasses);
+    var divider = '';
+    if (main.className) {
+        divider = ' ';
+    }
+    if (classToSet === 'all') {
+        return;
+    }
+    main.className += divider + classToSet;
 };
 var f_main = function (unitData) {
     var units = readData(unitData);
-    units = sortData(units);
+    var recipes = sortData(units);
     var main = document.getElementById('main');
     //for each unit in units, create a DOM object with its name as the title
-    for (var i = 0; i < units.length; i++) {
-        var name_2 = getPrettyStr(units[i].name);
-        var unitElem = createElement('div', '', main, 'unit', units[i].name);
+    for (var i = 0; i < recipes.length; i++) {
+        var name_2 = getPrettyStr(recipes[i].name);
+        var unitElem = createElement('div', '', main, 'unit', recipes[i].name);
         createElement('h4', name_2, unitElem, 'unit-title');
-        if (units[i] instanceof Recipe) {
-            //let btn = createElement('button', 'Recipe', unitElem);
-            unitElem.className = 'recipe ' + units[i].tier;
-            if (units[i].tier !== "hidden") {
-                unitElem.className = unitElem.className + ' basic';
-            }
-            var showButton = createElement('button', 'Recipe', unitElem);
-            showButton.addEventListener('click', clickCallback);
-            //TODO: finish getting the recipe info
-            var recipesContainer = createElement('div', '', unitElem, 'recipes-container');
-            var basicContainer = createElement('div', '', recipesContainer, 'basic-units');
-            var immediateContainer = createElement('div', '', recipesContainer, 'immediate-units');
-            var magicContainer = createElement('div', '', recipesContainer, 'magic-units');
-            var immediateRecipe = units[i].getRecipeUnits('immediate', units);
-            var basicRecipe = units[i].getRecipeUnits('basic', units);
-            var magicRecipe = units[i].getRecipeUnits('magic', units);
-            printObjToTable(immediateRecipe, immediateContainer);
-            printObjToTable(basicRecipe, basicContainer);
-            printObjToTable(magicRecipe, magicContainer);
+        //let btn = createElement('button', 'Recipe', unitElem);
+        unitElem.className = 'recipe ' + recipes[i].tier + ' ' + recipes[i].race;
+        if (recipes[i].tier !== "hidden") {
+            unitElem.className = unitElem.className + ' basic';
         }
+        var showButton = createElement('button', 'Recipe', unitElem);
+        showButton.addEventListener('click', clickCallback);
+        //TODO: finish getting the recipe info
+        var recipesContainer = createElement('div', '', unitElem, 'recipes-container');
+        var basicContainer = createElement('div', '', recipesContainer, 'basic-units');
+        var immediateContainer = createElement('div', '', recipesContainer, 'immediate-units');
+        var magicContainer = createElement('div', '', recipesContainer, 'magic-units');
+        var immediateRecipe = recipes[i].getRecipeUnits('immediate', units);
+        var basicRecipe = recipes[i].getRecipeUnits('basic', units);
+        var magicRecipe = recipes[i].getRecipeUnits('magic', units);
+        printObjToTable(immediateRecipe, immediateContainer);
+        printObjToTable(basicRecipe, basicContainer);
+        printObjToTable(magicRecipe, magicContainer);
     }
 };
 window.onload = function () {

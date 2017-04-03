@@ -1,5 +1,10 @@
 // magic -> rare -> epic -> unique -> hell -> legend
 var unitData = [
+	//miscellaneous
+	{
+		name: "spider_mine",
+		race: "terran_mech"
+	},
 	//terran bio
     {
         name: "marine",
@@ -422,7 +427,7 @@ var unitData = [
 	//hidden
 	{
 		name: "warfield",
-		tier: "hidden",
+		tier: "hidden_",
 		race: "terran_bio",
 		ingredients: {
 			alexi_stukov: 1,
@@ -431,7 +436,7 @@ var unitData = [
 	},
 	{
 		name: "kraith",
-		tier: "hidden",
+		tier: "hidden_",
 		race: "zerg",
 		ingredients: {
 			hybrid_reaver: 1,
@@ -440,7 +445,7 @@ var unitData = [
 	},
 	{
 		name: "tassadar",
-		tier: "hidden",
+		tier: "hidden_",
 		race: "protoss_bio",
 		ingredients: {
 			hybrid_dominator: 1,
@@ -449,7 +454,7 @@ var unitData = [
 	},
 	{
 		name: "science_vessel",
-		tier: "hidden",
+		tier: "hidden_",
 		race: "terran_mech",
 		ingredients: {
 			odin: 1,
@@ -458,7 +463,7 @@ var unitData = [
 	},
 	{
 		name: "purifier_collosus",
-		tier: "hidden",
+		tier: "hidden_",
 		race: "protoss_mech",
 		ingredients: {
 			wrathwalker: 1,
@@ -669,7 +674,7 @@ var unitData = [
 		race: "terran_mech",
 		tier: "hidden",
 		ingredients: {
-			vulture: 4
+			spider_mine: 12
 		}
 	},
 	{
@@ -936,7 +941,7 @@ var unitData = [
 	{
 		name: "hybrid_nemesis",
 		tier: "hidden",
-		race: "protoss_bio/zerg",
+		race: "protoss_bio/zerg hybrid",
 		ingredients: {
 			brood_lord: 1,
 			tassadar: 2
@@ -945,7 +950,7 @@ var unitData = [
 	{
 		name: "sarah_kerrigan",
 		tier: "hidden",
-		race: "terran_bio/zerg",
+		race: "terran_bio/zerg hybrid",
 		ingredients: {
 			nova: 1,
 			k5_kerrigan: 1
@@ -954,7 +959,7 @@ var unitData = [
 	{
 		name: "hybrid_behemoth",
 		tier: "hidden",
-		race: "protoss_bio/terran_bio",
+		race: "protoss_bio/terran_bio hybrid",
 		ingredients: {
 			alarak: 1,
 			warfield: 2
@@ -963,7 +968,7 @@ var unitData = [
 	{
 		name: "hybrid_destroyer",
 		tier: "hidden",
-		race: "terran_mech/protoss_mech",
+		race: "terran_mech/protoss_mech hybrid",
 		ingredients: {
 			hercules_bomber: 1,
 			mohandar: 1

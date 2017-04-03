@@ -8,8 +8,20 @@
 		<header>
 			<div class="inner">
 				<input type="text" placeholder="search for unit..." onkeyup="filterResults(this)">
-				<label><input id="hiddenCheck" type="checkbox" checked onclick="toggleUnits(this, 'hidden')"> Hidden</label>
-				<label><input id="basicCheck" type="checkbox" checked onclick="toggleUnits(this, 'basic')"> Normal</label>
+				<label><input id="hiddenCheck" type="checkbox" checked onclick="toggleUnits(this, 'hide-hidden')"> Hidden</label>
+				<label><input id="basicCheck" type="checkbox" checked onclick="toggleUnits(this, 'hide-basic')"> Normal</label>
+				<div class="raceSelect">
+					Race:
+					<select id="raceSelect" onchange="setRaceToggle(this.value)">
+						<option selected="selected">All</option>
+						<option>Zerg</option>
+						<option>Terran Bio</option>
+						<option>Protoss Bio</option>
+						<option>Terran Mech</option>
+						<option>Protoss Mech</option>
+						<option>Hybrid</option>
+					</select>
+				</div>
 				<div class="recipeSelect">
 					Recipe Type:
 					<select id="recipeType">

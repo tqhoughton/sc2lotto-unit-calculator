@@ -102,6 +102,10 @@ h4 {
 	z-index: 10;
 }
 
+.magic-units {
+	width: 110%;
+}
+
 @media (min-width: 1400px) {
 	#main, .inner {
 		max-width: 1200px;
@@ -112,10 +116,19 @@ h4 {
 	}
 }
 
-.recipeSelect {
+.recipeSelect, .raceSelect {
 	float: right;
 }
 
+.raceSelect {
+	margin-left: 20px;
+}
+
+.hide-hidden .recipe.hidden, .hide-basic .recipe.basic {
+	display: none;
+}
+
+/* COLORS */
 .magic h4 {
 	color: #2ac1bc;
 }
@@ -136,10 +149,20 @@ h4 {
 	color: #FF3399;
 }
 
-.hidden h4 {
+.hidden h4, .hidden_ h4 {
 	color: #579696;
 }
 
 .legendary h4 {
 	color: #330099;
+}
+
+/* race hiding */
+.zerg .recipe:not(.zerg),
+.terran_bio .recipe:not(.terran_bio),
+.terran_mech .recipe:not(.terran_mech),
+.protoss_bio .recipe:not(.protoss_bio),
+.protoss_mech .recipe:not(.protoss_mech),
+.hybrid .recipe:not(.hybrid) {
+	display: none;
 }
